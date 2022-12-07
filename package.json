@@ -1,0 +1,19 @@
+{
+  "name": "bibliotecavirtual-main",
+  "version": "1.0.0",
+  "description": "trabalho de web2 2022 Projeto de introdução de dados em uma biblioteca alunas: Vanessa Carla e Maria Eduarda",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edu-ardasantana/BibliotecaVirtual.git"
+  },
+  "author": "Maria Eduarda, Vanessa Carla",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edu-ardasantana/BibliotecaVirtual/issues"
+  },
+  "homepage": "https://github.com/edu-ardasantana/BibliotecaVirtual#readme"
+}
