@@ -2,7 +2,7 @@
   "name": "bibliotecavirtual-main",
   "version": "1.0.0",
   "description": "trabalho de web2 2022 Projeto de introdução de dados em uma biblioteca alunas: Vanessa Carla e Maria Eduarda",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/edu-ardasantana/BibliotecaVirtual/issues"
   },
-  "homepage": "https://github.com/edu-ardasantana/BibliotecaVirtual#readme"
+  "homepage": "https://github.com/edu-ardasantana/BibliotecaVirtual#readme",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2"
+  }
 }
