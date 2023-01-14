@@ -1,117 +1,155 @@
 const express = require('express');
 const app = express();
 const port = 8080;
-const fs = require('fs');
 const bodyParser = require('body-parser');
 var urlEncodedParser = bodyParser.urlencoded({extended:false});
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-app.set('views', __dirname);
-app.use(express.static(__dirname + '/public'));
+const { Op } = require("sequelize");
+const path = require('path');
 
-// Página home
-// acessar localhost:8080
-app.get('/', (req,res) =>{
-    res.sendFile(__dirname + '/' + 'public/home.html')
+// Visualizações
+app.use(express.static(path.join(__dirname, '/public')));
+
+const exphbs = require('express-handlebars');
+app.use(express.static(path.join(__dirname, '/views')));
+app.set('views', path.join(__dirname, '/views'));
+app.engine('hbs',
+    exphbs.engine({
+        defaultLayout: 'main',
+        extname: '.hbs',
+        layoutsDir: path.join(__dirname, 'views/layouts')
+    })
+);
+app.set('view engine', 'hbs');
+
+// Conexão banco de dados
+const conexaoBD = require("./conexaoBD.js");
+
+const Livro = require("./models/Livro");
+
+conexaoBD.sequelize.authenticate().then(function(){
+    console.log("Conectado!!");
+}).catch(function(erro){
+    console.log("Erro ao conectar " + erro);
 });
 
-// Pesquisa de livros
-app.get('/procurarLivro', urlEncodedParser,(req,res) =>{
-	
-    var nome = req.query.nome;
-    var genero = req.query.genero;
-    var ano = req.query.ano;
+// conexaoBD.sequelize.sync({alter:true}); 
 
-    fs.readFile('meuBD.json','utf8', (erro, texto) =>{
-        if (erro) 
-            throw "Deu algum erro " + erro;
-        var meuBD = JSON.parse(texto);
-        var livros = meuBD.livros;
-        var encontrado = ''
+// Rotas
+app.get('/', (req,res) => {
+    res.render('index');
+});
 
+app.get('/cadastraLivro', (req,res) =>{
+    res.render('cadastraLivro')
+});
 
-        if (nome == "" && genero == "" && ano.length > 0){
-            encontrado = livros.filter(p => parseInt(p.ano) == ano);
-        }else if (nome == "" && genero.length > 0 && ano == ""){
-            encontrado = livros.filter(p => p.genero.toLowerCase().includes(genero.toLowerCase()));
-        }else if (nome.length > 0 && genero == "" && ano == ""){
-            encontrado = livros.filter(p => p.nome.toLowerCase().includes(nome.toLowerCase()));
-        }else if (nome == "" && genero.length > 0 && ano.length > 0){
-            encontrado = livros.filter(p => p.genero.toLowerCase().includes(genero.toLowerCase()) && parseInt(p.ano) == ano);
-        }else if (nome.length > 0 && genero.length > 0 && ano == ""){
-            encontrado = livros.filter(p => p.nome.toLowerCase().includes(nome.toLowerCase()) && p.genero.toLowerCase().includes(genero.toLowerCase()));
-        }else if (nome.length > 0 && genero == "" && ano.length > 0){
-            encontrado = livros.filter(p => p.nome.toLowerCase().includes(nome.toLowerCase()) && parseInt(p.ano) == ano);
-        }else if (nome.length > 0 && genero.length > 0 && ano.length > 0){
-            encontrado = livros.filter(p => p.nome.toLowerCase().includes(nome.toLowerCase()) && p.genero.toLowerCase().includes(genero.toLowerCase()) && parseInt(p.ano) == ano);
+app.get('/buscaLivro', (req,res) =>{
+    res.render('buscaLivro');
+});
+
+app.get('/deleteLivro', (req,res) =>{
+    var id = req.query.id;
+
+    Livro.destroy({
+        where:{
+            id:id
         }
-        
-
-        var exibicao = "";
-
-        if (encontrado != ''){
-            for (var i = 0; i < encontrado.length; i++){
-                exibicao+= "<div><b>Título do Livro:</b> " + encontrado[i].nome + " ";
-                exibicao+= "<b>Gênero: </b>" + encontrado[i].genero;
-                exibicao+= "<b> Ano de Lançamento</b>: "+ encontrado[i].ano + "<br>";
-                exibicao+= "</div><br><br>"
-            }
-        }else{
-            exibicao = "<br><br><p style='text-align: center;'><b>0 resultados encontrados</b><p>"
-        }
-
-        
-
-        var header = "<header style= 'background-color: blueviolet; padding 10px; color: #fff; text-align: center;'><h1>BIBLIOTECA VIRTUAL</h1></header>";
-        var h2 = "<h2 style='text-align: center;'>Resultados da busca</h2>";
-        res.send(header + h2 + exibicao);
+    }).then(function(livros){
+        console.log("Livro removido com sucesso");
+        res.send("Livro removido com sucesso!");
+    }).catch(function(erro){
+        console.log("Erro na remoção: " + erro);
+        res.send("Ocorreu algum problema na remoção");
     });
-    
-}); 
+})
 
-// Página de cadastro
-app.get('/livro', (req,res) =>{
-    res.sendFile(__dirname + '/' + 'public/cadastro.html');
+app.get('/atualizaLivro', (req,res) =>{
+    var id = req.query.id;
+
+    Livro.findOne({
+        where: {
+            id:id
+        }
+    }).then(function(livro){
+        res.render('atualizaLivro', {livro,livro})
+    }).catch(function(erro){
+        console.log("Erro na consulta: " + erro);
+        res.send("Ocorreu um erro.")
+    });
 });
 
+// Verbos HTTP
 app.post('/livro', urlEncodedParser, (req,res) =>{
-
-    var nome = req.body.nome;
-    var genero = req.body.genero;
+    var titulo = req.body.titulo;
     var ano = req.body.ano;
-    var codigo = 0;
+    var genero = req.body.genero;
 
-    var novoLivro = {codigo: codigo, nome: nome, genero:genero, ano:ano};
+    var novoLivro = {titulo:titulo, ano:ano, genero:genero};
 
-    fs.readFile('meuBD.json', 'utf8', (erro,texto) =>{
-        if (erro)
-            throw "Deu algum erro: " + erro;
-        
-        var meuBD = JSON.parse(texto);
-        novoLivro.codigo = parseInt(meuBD.livros.length) + 1;
-
-        meuBD.livros.push(novoLivro);
-
-        var meuBDString = JSON.stringify(meuBD);
-
-        fs.writeFile('meuBD.json', meuBDString, (erro) =>{
-            if (erro)
-                throw "Deu algum erro " + erro;
-            else
-                var header = "<header style= 'background-color: blueviolet; padding 10px; color: #fff; text-align: center;'><h1>BIBLIOTECA VIRTUAL</h1></header>"
-                var h2 = "<h2 style='text-align: center;'>Livros Cadastrados</h2>";
-                var exibicao = ""
-                console.log(meuBD.livros)
-                for (var i = 0; i < meuBD.livros.length; i++){
-                    exibicao+= "<div><b>Título do Livro:</b> " + meuBD.livros[i].nome + " ";
-                    exibicao+= "<b>Gênero: </b>" + meuBD.livros[i].genero;
-                    exibicao+= "<b> Ano de Lançamento</b>: "+ meuBD.livros[i].ano + "<br>";
-                    exibicao+= "</div><br><br>"
-                }
-                res.send(header + h2 + exibicao);
-        });
+    var livro =  Livro.create(novoLivro).then(function(){
+        console.log("Livro inserido com sucesso!");
+        res.send("Livro inserido com sucesso!");
+    }).catch(function(erro){
+        console.log("Erro ao inserir livro: " + erro);
+        res.send("Houve um problema no cadastro do livro.");
     });
+});
 
+app.get('/livro', (req,res) =>{
+    var titulo = req.query.titulo;
+    var ano = req.query.ano;
+    var genero = req.query.genero;
+
+    Livro.findAll({
+        where:{
+            titulo: {
+                [Op.substring]:titulo
+            },
+            ano: {
+                [Op.substring]:ano
+            },
+            genero: {
+                [Op.substring]: genero
+            }
+        }
+    }).then(function(livros){
+        // console.log(livros);
+        tabela = ""
+        for(var i=0; i < livros.length; i++){
+            tabela += "<div>Resultado da busca:</div>"
+			tabela+= "<a href='/atualizaLivro?id="+livros[i].id+"'>Atualizar Livro</a><br>";
+			tabela+= "<a href='/deleteLivro?id="+livros[i].id+"'>Remover Livro</a><br>";
+			tabela+= "<b>Título</b>: "+livros[i].titulo+"<br>";
+			tabela+= "<b>Ano</b>: "+livros[i].ano+"<br>";
+			tabela+= "<b>Gênero</b>: "+livros[i].genero+"<br>";
+		}
+
+        res.send(tabela);
+    }).catch(function(erro){
+        console.log("Erro na consulta: " + erro);
+        res.send("Ocorreu algum problema na consulta.");
+    });
+});
+
+app.put('/livro', urlEncodedParser, (req,res) =>{
+    var id = req.body.id;
+    var titulo = req.body.titulo;
+    var ano = req.body.ano;
+    var genero = req.body.genero;
+
+    var livroAtualizado = {id:id, titulo:titulo, ano:ano, genero:genero};
+
+    var livro = Livro.update(livroAtualizado,{
+        where: {
+            id:id
+        }
+    }).then(function(){
+        console.log("Livro atualizado com sucesso!");
+        res.send("Livro atualizado com sucesso!");
+    }).catch(function(erro){
+        console.log("Erro ao atualizar livro: " + erro);
+        res.send("Houve um problema na atualização.");
+    });
 });
 
 app.listen(port, () => {

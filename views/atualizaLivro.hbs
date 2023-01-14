@@ -1,0 +1,7 @@
+<form action='/livro' method='put'>
+    <input type='hidden' name='id' value='{{livro.dataValues.id}}'>
+    <label>Título: </label><input type='text' name='titulo' value='{{livro.dataValues.titulo}}'><br>
+    <label>Ano: </label><input type='text' name='ano' value='{{livro.dataValues.ano}}'><br>
+    <label>Gênero: </label><input type='text' name='genero' value="{{livro.dataValues.genero}}"><br>
+    <button>Atualizar</button>
+</form>
