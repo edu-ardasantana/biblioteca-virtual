@@ -25,6 +25,7 @@ app.set('view engine', 'hbs');
 const conexaoBD = require("./conexaoBD.js");
 
 const Livro = require("./models/Livro");
+const { parse } = require('path');
 
 conexaoBD.sequelize.authenticate().then(function(){
     console.log("Conectado!!");
@@ -37,6 +38,10 @@ conexaoBD.sequelize.authenticate().then(function(){
 // Rotas
 app.get('/', (req,res) => {
     res.render('index');
+});
+
+app.get('/home', (req,res)=>{
+    res.render('home');
 });
 
 app.get('/cadastraLivro', (req,res) =>{
@@ -114,25 +119,17 @@ app.get('/livro', (req,res) =>{
         }
     }).then(function(livros){
         // console.log(livros);
-        tabela = ""
-        for(var i=0; i < livros.length; i++){
-            tabela += "<div>Resultado da busca:</div>"
-			tabela+= "<a href='/atualizaLivro?id="+livros[i].id+"'>Atualizar Livro</a><br>";
-			tabela+= "<a href='/deleteLivro?id="+livros[i].id+"'>Remover Livro</a><br>";
-			tabela+= "<b>Título</b>: "+livros[i].titulo+"<br>";
-			tabela+= "<b>Ano</b>: "+livros[i].ano+"<br>";
-			tabela+= "<b>Gênero</b>: "+livros[i].genero+"<br>";
-		}
-
-        res.send(tabela);
+        res.render('resultadoBusca', {lista:livros});
     }).catch(function(erro){
         console.log("Erro na consulta: " + erro);
         res.send("Ocorreu algum problema na consulta.");
     });
 });
 
-app.put('/livro', urlEncodedParser, (req,res) =>{
-    var id = req.body.id;
+
+app.put('/upLivro', urlEncodedParser, (req,res) =>{
+    var id = req.params.id;
+
     var titulo = req.body.titulo;
     var ano = req.body.ano;
     var genero = req.body.genero;
@@ -151,6 +148,7 @@ app.put('/livro', urlEncodedParser, (req,res) =>{
         res.send("Houve um problema na atualização.");
     });
 });
+
 
 app.listen(port, () => {
     console.log(`Esta aplicação está escutando a porta ${port}`);

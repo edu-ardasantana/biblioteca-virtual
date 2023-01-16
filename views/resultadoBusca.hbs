@@ -1,0 +1,13 @@
+<div class="title" style="text-align: center;">
+            <h2>Resultados da busca: </h2> <br>
+</div>
+{{#each lista}}
+    <div class="card" style="text-align: center;">
+        <b>Título</b>: {{this.dataValues.titulo}}<br>
+        <b>Ano</b>: {{this.dataValues.ano}}<br>
+        <b>Gênero</b>: {{this.dataValues.genero}}<br><br>
+        <a href='/atualizaLivro?id={{this.dataValues.id}}'><button>Atualizar Livro</button></a>
+        <a href='/deleteLivro?id={{this.dataValues.id}}'><button>Remover Livro</button></a><br>
+    </div>
+    <br>
+{{/each}}

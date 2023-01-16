@@ -1,7 +1,14 @@
-<div>Procure um livro: </div>
+ <div class="title" style="text-align: center;">
+            <h2>Pesquisar livros</h2> <br>
+            <span>Digite os dados do livro que deseja buscar: </span>
+</div>
 <form action='/livro' method='GET'>
-	<label>Título: </label><input type='text' name='titulo'><br>
-	<label>Ano: </label><input type='text' name='ano'><br>
-	<label>Gênero: </label><input type='text' name='genero'><br>
-	<button>Buscar</button>
+	<div class="card">
+		<div class="lineInput">
+			<input type='text' name='titulo' placeholder="Título do livro"><br>
+			<input type='text' name='ano' placeholder="Ano de lançamento"><br>
+			<input type='text' name='genero' placeholder="Gênero do livro"><br>
+		</div>
+		<button>Buscar</button>
+	</div>
 </form>
