@@ -1,0 +1,12 @@
+<div class="title" style="text-align: center;">
+            <h2>Resultados da busca: </h2> <br>
+</div>
+{{#each listaUsuario}}
+    <div class="card" style="text-align: center;">
+        <b>Login</b>: {{this.dataValues.login}}<br>
+    </div>
+    <br>
+{{/each}}
+
+<br>
+<a href="/consultaUsuario"><button>Nova consulta</button></a>

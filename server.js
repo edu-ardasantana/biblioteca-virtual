@@ -115,7 +115,7 @@ app.post('/usuario', urlEncodedParser, async (req, res) => {
     })
 })
 
-app.use("*",validaToken)
+// app.use("*",validaToken)
 
 app.get('/', (req,res) => {
     res.render('index');
@@ -131,6 +131,10 @@ app.get('/cadastraLivro', (req,res) =>{
 
 app.get('/cadUsuario', (req, res) => {
     res.render('cadUsuario')
+});
+
+app.get('/consultaUsuario', (req, res)=>{
+    res.render('consultaUsuario')
 })
 
 app.get('/buscaLivro', (req,res) =>{
@@ -173,7 +177,19 @@ app.get('/atualizaLivro', (req,res) =>{
 
 // Verbos HTTP
 
+app.get('/usuario', (req, res) => {
+    var login = req.query.login;
 
+    Usuario.findAll({
+        where: {
+            login: {
+                [Op.substring]:login
+            }
+        }
+    }).then(function (usuarios) {
+        res.render('resultado2',{listaUsuario:usuarios})
+    })
+})
 
 app.post('/livro', urlEncodedParser, (req,res) =>{
     var titulo = req.body.titulo;
