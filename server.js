@@ -61,27 +61,55 @@ app.get('/deleteLivro', (req,res) =>{
         }
     }).then(function(livros){
         console.log("Livro removido com sucesso");
-        res.send("Livro removido com sucesso!");
+        res.render('respDelete');
     }).catch(function(erro){
         console.log("Erro na remoção: " + erro);
         res.send("Ocorreu algum problema na remoção");
     });
 })
 
-app.get('/atualizaLivro', (req,res) =>{
-    var id = req.query.id;
+// app.get('/atualizaLivro', (req,res) =>{
+//     var id = req.query.id;
 
-    Livro.findOne({
-        where: {
-            id:id
-        }
-    }).then(function(livro){
-        res.render('atualizaLivro', {livro,livro})
-    }).catch(function(erro){
-        console.log("Erro na consulta: " + erro);
-        res.send("Ocorreu um erro.")
-    });
+//     Livro.findOne({
+//         where: {
+//             id:id
+//         }
+//     }).then(function(livro){
+//         res.render('atualizaLivro', {livro,livro})
+//     }).catch(function(erro){
+//         console.log("Erro na consulta: " + erro);
+//         res.send("Ocorreu um erro.")
+//     });
+// });
+
+app.get('/atualizaLivro',(req,res)=>{
+	var id = req.query.id;
+	
+	Livro.findOne({
+		where:{
+			id:id
+		}
+	}).then(function(livro){
+		
+		
+		res.render('atualizaLivro')
+				
+	}).catch(function(erro){
+		console.log("Erro na consulta: "+erro)
+		res.send("Ocorreu algum problema na consulta");
+	})
+
 });
+
+app.get('/meuPerfil', (req,res) =>{
+    res.render('meuPerfil')
+});
+
+app.get('/consulta', (req,res)=>{
+    res.render('consultaUsuario')
+});
+
 
 // Verbos HTTP
 app.post('/livro', urlEncodedParser, (req,res) =>{
@@ -93,7 +121,7 @@ app.post('/livro', urlEncodedParser, (req,res) =>{
 
     var livro =  Livro.create(novoLivro).then(function(){
         console.log("Livro inserido com sucesso!");
-        res.send("Livro inserido com sucesso!");
+        res.render('respCadastro');
     }).catch(function(erro){
         console.log("Erro ao inserir livro: " + erro);
         res.send("Houve um problema no cadastro do livro.");
@@ -127,7 +155,7 @@ app.get('/livro', (req,res) =>{
 });
 
 
-app.put('/upLivro', urlEncodedParser, (req,res) =>{
+app.put('/livro', urlEncodedParser, (req,res) =>{
     var id = req.params.id;
 
     var titulo = req.body.titulo;
@@ -148,6 +176,29 @@ app.put('/upLivro', urlEncodedParser, (req,res) =>{
         res.send("Houve um problema na atualização.");
     });
 });
+
+// app.post('/upLivro', urlEncodedParser, (req,res)=>{
+	
+// 	var titulo = req.body.titulo;
+//     var ano = req.body.ano;
+//     var genero = req.body.genero;
+	
+// 	var livroAtualizado = {titulo:titulo, ano:ano, genero:genero};
+	
+// 	Livro.update(livroAtualizado, {
+// 		where:{
+// 			id:id
+// 		}
+// 	} ).then(function(){
+// 			console.log("Livro atualizado com sucesso!");
+// 			res.send("Livro atualizado com sucesso!");
+			
+// 		}).catch(function(erro){
+// 			console.log("Erro ao atualizar livro: "+erro);
+// 			res.send("Houve um problem na atualização ");
+// 	});
+
+// });
 
 
 app.listen(port, () => {

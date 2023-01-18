@@ -1,7 +1,15 @@
-<form action='/upLivro' method='put'>
-    <input type='hidden' name='id' value='{{livro.dataValues.id}}'>
-    <label>Título: </label><input type='text' name='titulo' value='{{livro.dataValues.titulo}}'><br>
-    <label>Ano: </label><input type='text' name='ano' value='{{livro.dataValues.ano}}'><br>
-    <label>Gênero: </label><input type='text' name='genero' value="{{livro.dataValues.genero}}"><br>
-    <button>Atualizar</button>
+<div class="title" style="text-align: center;">
+    <h2>Atualize o livro:</h2>
+</div>
+
+<form action='/livro' method='put'>
+    <div class="card">
+        <div class="lineInput">
+            <input type='hidden' name='id' value='{{livro.dataValues.id}}'>
+            <label><b>Título do livro</b>: </label><br><input type='text' name='titulo' value='{{livro.dataValues.titulo}}'><br>
+            <label><b>Ano de lançamento:</b> </label><br><input type='text' name='ano' value='{{livro.dataValues.ano}}'><br>
+            <label><b>Gênero do livro</b>: </label><br><input type='text' name='genero' value="{{livro.dataValues.genero}}"><br>
+        </div>
+        <button>Atualizar</button>
+    </div>
 </form>
