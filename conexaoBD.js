@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('biblioteca', 'root', '4685dd',{
+const sequelize = new Sequelize('biblioteca', 'root', 'aluno',{
     host: 'localhost',
     dialect: 'mysql'
 });

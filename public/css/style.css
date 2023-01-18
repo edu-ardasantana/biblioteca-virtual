@@ -27,6 +27,18 @@ main{
     margin-top: 15px;
     border-radius: 5px;
 }
+
+.cardLogin{
+    margin: 0 auto;
+    background-color: #fff;
+    border: solid #ccc;
+    padding:20px ;
+    margin-top: 15px;
+    border-radius: 5px;
+    width: 400px;
+    text-align: center;
+}
+
 .lineInput{
     display: grid;
     margin-bottom: 10px;
